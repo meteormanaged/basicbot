@@ -65,9 +65,6 @@ module.exports = function (options) {
 		return false;
 	}
 
-	//	if () {
-	//		return false;
-	//	}
 
 	var Slack = require('slack-client');
 	var slack = new Slack(process.env.SLACK_TOKEN, true, true);
