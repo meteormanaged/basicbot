@@ -11,5 +11,8 @@
     "url": "http://gitlab.oortcloud.xyz/slackbots/basicbot.git"
   },
   "author": "Mike Kozak <mkozak@meteormanaged.com> (http://www.meteormanaged.com)",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "slack-client": "^1.4.1"
+  }
 }

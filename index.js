@@ -11,12 +11,15 @@ var isDirect = function (userId, messageText) {
 		messageText.substr(0, userTag.length) === userTag;
 };
 
-var tokenProvided = function () {
+var tokenProvided = function (SLACK_TOKEN) {
 	'use strict';
-	if (process.env.SLACK_TOKEN === undefined) {
+	console.log();
+	if (SLACK_TOKEN === undefined) {
+		console.log("You should pass a SLACK_TOKEN as an environmental variable.  Otherwise, I'm not going to work.");
 		return false;
 	} else {
-		return;
+		console.log("You provided a SLACK_TOKEN");
+		return SLACK_TOKEN;
 	}
 };
 
@@ -26,9 +29,9 @@ var checkMessage = function (message) {
 		console.log("Somehow I fired but didn't get the message.  Dependency bug.");
 		return false;
 	}
-	
+
 	var words = message.text.split(" ");
-	
+
 	if (words.length < 2) {
 		console.log("No command given.");
 		return false;
@@ -36,18 +39,18 @@ var checkMessage = function (message) {
 		var cmd = words[1];
 		return cmd;
 	}
-	
+
 };
 
 var hasOptions = function (options) {
 	'use strict';
 	if (typeof options === 'undefined') {
-		console.log("You didn't include any commands so the bot won't do much.");
+		console.log("You didn't include any commands so the bot won't do anything.");
 		return false;
 	}
 	if (typeof options === 'object') {
 		console.log("You passed an options object with the following commands: " + Object.keys(options.cmds).join(", "));
-		// It should make sure check the options out.
+		return;
 	} else {
 		console.log("You should pass it an options object so it can do something.  I don't know what to do with this.");
 		return false;
@@ -57,11 +60,14 @@ var hasOptions = function (options) {
 
 module.exports = function (options) {
 	'use strict';
-	hasOptions(options);
-
-	if (!tokenProvided) {
-		console.log("You should pass a SLACK_TOKEN as an environmental variable.  Otherwise, I'm not going to work.");
+	var SLACK_TOKEN = process.env.SLACK_TOKEN;
+	if (!tokenProvided(SLACK_TOKEN) || !hasOptions(options)) {
+		return false;
 	}
+
+	//	if () {
+	//		return false;
+	//	}
 
 	var Slack = require('slack-client');
 	var slack = new Slack(process.env.SLACK_TOKEN, true, true);
@@ -112,11 +118,10 @@ module.exports = function (options) {
 
 		var channel = slack.getChannelGroupOrDMByID(message.channel);
 		var user = slack.getUserByID(message.user);
-		
+
 		//Check out the message
 		var cmd = checkMessage(message);
 		if (!cmd) {
-			console.log("The message didn't check out.");
 			return false;
 		}
 
