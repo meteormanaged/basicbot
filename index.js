@@ -13,13 +13,27 @@ var isDirect = function (userId, messageText) {
 
 var tokenProvided = function (SLACK_TOKEN) {
 	'use strict';
-	console.log();
 	if (SLACK_TOKEN === undefined) {
 		console.log("You should pass a SLACK_TOKEN as an environmental variable.  Otherwise, I'm not going to work.");
 		return false;
 	} else {
 		console.log("You provided a SLACK_TOKEN");
 		return SLACK_TOKEN;
+	}
+};
+
+var hasOptions = function (options) {
+	'use strict';
+	if (typeof options === 'undefined') {
+		console.log("You didn't include any commands so the bot won't do anything.");
+		return false;
+	}
+	if (typeof options === 'object') {
+		console.log("You passed an options object with the following commands: " + Object.keys(options.cmds).join(", "));
+		return true;
+	} else {
+		console.log("You should pass it an options object so it can do something.  I don't know what to do with this.");
+		return false;
 	}
 };
 
@@ -42,30 +56,13 @@ var checkMessage = function (message) {
 
 };
 
-var hasOptions = function (options) {
-	'use strict';
-	if (typeof options === 'undefined') {
-		console.log("You didn't include any commands so the bot won't do anything.");
-		return false;
-	}
-	if (typeof options === 'object') {
-		console.log("You passed an options object with the following commands: " + Object.keys(options.cmds).join(", "));
-		return;
-	} else {
-		console.log("You should pass it an options object so it can do something.  I don't know what to do with this.");
-		return false;
-	}
-};
-
-
 module.exports = function (options) {
 	'use strict';
 	var SLACK_TOKEN = process.env.SLACK_TOKEN;
 	if (!tokenProvided(SLACK_TOKEN) || !hasOptions(options)) {
 		return false;
 	}
-
-
+	
 	var Slack = require('slack-client');
 	var slack = new Slack(process.env.SLACK_TOKEN, true, true);
 
@@ -116,14 +113,14 @@ module.exports = function (options) {
 		var channel = slack.getChannelGroupOrDMByID(message.channel);
 		var user = slack.getUserByID(message.user);
 
-		//Check out the message
-		var cmd = checkMessage(message);
-		if (!cmd) {
-			return false;
-		}
-
-		//Run the command with the paramaters
+		//If mentioned or is direct
 		if (message.type === 'message' && isDirect(slack.self.id, message.text)) {
+
+			var cmd = checkMessage(message);
+			if (!cmd) {
+				return false;
+			}
+
 			if (!message.text) {
 				console.log("bug fix for message split popped.");
 				return false;
