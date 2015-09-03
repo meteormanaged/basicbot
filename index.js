@@ -1,8 +1,10 @@
 var makeMention = function (userId) {
+	'use strict';
 	return '<@' + userId + '>';
 };
 
 var isDirect = function (userId, messageText) {
+	'use strict';
 	var userTag = makeMention(userId);
 	return messageText &&
 		messageText.length >= userTag.length &&
@@ -10,6 +12,7 @@ var isDirect = function (userId, messageText) {
 };
 
 var tokenProvided = function () {
+	'use strict';
 	if (process.env.SLACK_TOKEN === undefined) {
 		return false;
 	} else {
@@ -18,16 +21,17 @@ var tokenProvided = function () {
 };
 
 var checkMessage = function (message) {
+	'use strict';
 	if (!message.text) {
-		console.log("Somehow I fired but didn't get the message.  Dependency bug.")
+		console.log("Somehow I fired but didn't get the message.  Dependency bug.");
 		return false;
 	}
 	
 	var words = message.text.split(" ");
 	
-	if (words.length < 2){
-		console.log("No command given.")
-		return false;	
+	if (words.length < 2) {
+		console.log("No command given.");
+		return false;
 	} else {
 		var cmd = words[1];
 		return cmd;
@@ -36,6 +40,7 @@ var checkMessage = function (message) {
 };
 
 var hasOptions = function (options) {
+	'use strict';
 	if (typeof options === 'undefined') {
 		console.log("You didn't include any commands so the bot won't do much.");
 		return false;
@@ -47,11 +52,11 @@ var hasOptions = function (options) {
 		console.log("You should pass it an options object so it can do something.  I don't know what to do with this.");
 		return false;
 	}
-}
+};
 
 
 module.exports = function (options) {
-
+	'use strict';
 	hasOptions(options);
 
 	if (!tokenProvided) {
@@ -104,25 +109,23 @@ module.exports = function (options) {
 	slack.login();
 
 	slack.on('message', function (message) {
-		"use strict";
 
 		var channel = slack.getChannelGroupOrDMByID(message.channel);
 		var user = slack.getUserByID(message.user);
 		
 		//Check out the message
 		var cmd = checkMessage(message);
-		if (!cmd){
+		if (!cmd) {
 			console.log("The message didn't check out.");
 			return false;
-		} 
+		}
 
 		//Run the command with the paramaters
 		if (message.type === 'message' && isDirect(slack.self.id, message.text)) {
 			if (!message.text) {
-				console.log("bug fix for message split popped.")
+				console.log("bug fix for message split popped.");
 				return false;
 			}
-			
 
 			//What command and do I have it?
 
@@ -142,4 +145,4 @@ module.exports = function (options) {
 		}
 	});
 
-}
+};
