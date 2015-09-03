@@ -1,0 +1,15 @@
+{
+  "name": "basicbot",
+  "version": "1.0.0",
+  "description": "basicbot for bootstrapping other cmd based bots",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.oortcloud.xyz/slackbots/basicbot.git"
+  },
+  "author": "Mike Kozak <mkozak@meteormanaged.com> (http://www.meteormanaged.com)",
+  "license": "UNLICENSED"
+}
